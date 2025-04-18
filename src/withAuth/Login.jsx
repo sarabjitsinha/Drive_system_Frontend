@@ -8,7 +8,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
-  const user=localStorage.getItem("user");
+  // const user=localStorage.getItem("user");
+const {user}=useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

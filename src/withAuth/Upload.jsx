@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import API from '../services/api';
 import Dashboard from './Dashboard';
+import { useAuth } from '../contexts/Authcontext';
 
 export default function Upload() {
   const [file, setFile] = useState(null);
   const [path, setPath] = useState('');
   const [message, setMessage] = useState('');
-  const user=localStorage.getItem("user");
+  // const user=localStorage.getItem("user");
+  const {user}=useAuth();
 
   const handleUpload = async () => {
     if (!file) return setMessage('No file selected');
@@ -24,11 +26,14 @@ export default function Upload() {
       setMessage('Upload successful!');
       setFile(null);
       setPath('');
-    } catch (err) {
+      alert("upload success")
+      window.location.reload()
+    } 
+    catch (err) {
+      alert("Please connect to backend to execute upload")
       console.error(err);
       setMessage('Upload failed.');
     }
-    window.location.reload()
   };
 
   return (user ?

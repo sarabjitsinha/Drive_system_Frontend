@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './withAuth/Login';
 import Signup from './withAuth/Signup';
 import Dashboard from './withAuth/Dashboard';
@@ -13,6 +13,7 @@ function App() {
     <AuthProvider>
      <Router>
       <Headers/>
+      <h1 className='text-center p-2 text-xl font-bold'>Welcome to Data Drive system</h1>
           <Routes>
             <Route path="/" element={[<Upload key={0}/>,<Dashboard key={1}/>]} />
             <Route path="/login" element={<Login />} />

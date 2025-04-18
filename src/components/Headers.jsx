@@ -12,11 +12,11 @@ function Headers(){
     
     return(
 
-        <div className="flex justify-evenly">
+        <div className="flex justify-evenly bg-slate-300">
         <Link to={"/"}>Home</Link>
         <Link to={"/login"}>Login</Link>
         <Link to={"/signup"}>Signup</Link>
-        <Link to={"/upload"}>upload</Link>
+        <Link to={"/upload"}>Upload</Link>
         <button type="submit" onClick={handleclick} className=" hover:cursor-pointer">Logout</button>
         </div>
     )

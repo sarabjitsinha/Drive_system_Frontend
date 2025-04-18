@@ -22,6 +22,6 @@ export default function Signup() {
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full mb-2 p-2 border rounded" />
         <button type="submit" className="w-full bg-green-500 text-white p-2 rounded">Signup</button>
       </form>
-    </div>):<div>You are registered</div>
+    </div>):<div>You are already registered</div>
   );
 }

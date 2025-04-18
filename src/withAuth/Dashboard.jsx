@@ -1,12 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import API from '../services/api';
+import { useAuth } from '../contexts/Authcontext';
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
-   const user=localStorage.getItem("user")
+  //  const user=localStorage.getItem("user")
+const {user}=useAuth()
 
   useEffect(() => {
-    fetchFiles();
+  user && fetchFiles();
   }, []);
 
   const fetchFiles = async () => {
