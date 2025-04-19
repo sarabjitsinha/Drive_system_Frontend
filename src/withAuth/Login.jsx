@@ -14,6 +14,11 @@ const {user}=useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await API.post('/auth/login', { email, password });
+    if(data.error=="Invalid credentials")
+      {
+        alert("invalid username/password") ;
+        return
+      }
     login(data);
     navigate('/');
   };
