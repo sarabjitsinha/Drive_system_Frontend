@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import API from '../services/api';
-import { useAuth } from '../contexts/Authcontext';
+// import { useAuth } from '../contexts/Authcontext';
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
-  //  const user=localStorage.getItem("user")
-const {user}=useAuth()
-
+  // const {user}=useAuth()
+  const user=localStorage.getItem("user")
   useEffect(() => {
-  user && fetchFiles();
+   user && fetchFiles();
   }, []);
 
   const fetchFiles = async () => {
@@ -21,64 +20,90 @@ const {user}=useAuth()
     }
   };
 
-  const deleteFile = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this file?')) return;
+  const deleteItem = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
       await API.delete(`/files/${id}`);
-      fetchFiles(); // Refresh the file list
+      fetchFiles(); // refresh view
     } catch (err) {
       console.error('Delete failed', err);
     }
   };
 
+  
   const buildTree = (items, parentId = null) => {
     return items
-      .filter(item => item.parent === parentId)
+      .filter(item => {
+        const itemParent = item.parent ? item.parent.toString() : null;
+        return itemParent === parentId;
+      })
       .map(item => ({
         ...item,
-        children: buildTree(items, item._id),
+        children: buildTree(items, item._id.toString()),
       }));
   };
+  
 
-    const renderTree = (nodes, depth = 0) => {
+  const tree = buildTree(files);
+  const handleDownload = async (id, name) => {
+    try {
+      const res = await API.get(`/files/download/${id}`, {
+        responseType: 'blob',
+      });
+  
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', name);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('Download failed. You may be unauthorized or the file is missing.');
+    }
+  };
+  
+
+  const renderTree = (nodes, depth = 0) => {
     return nodes.map((node) => (
       <div key={node._id} style={{ marginLeft: depth * 20 }} className="mb-1">
         <div className="flex justify-between items-center">
           <span>
             {node.type === 'folder' ? '📁' : '📄'} {node.name}
           </span>
-  
           <div className="flex gap-2">
             {node.type === 'file' && (
-              <a
-                href={`${import.meta.env.VITE_API_URL}/files/download/${node._id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline"
-              >
-                Download
-              </a>
+              
+              <button
+                   onClick={() => handleDownload(node._id, node.name)}
+                className="text-blue-600 underline"
+                >
+                  Download
+                </button>
+
             )}
-            {/* ✅ Show delete for both file and folder */}
             <button
-              onClick={() => deleteFile(node._id)}
+              onClick={() => deleteItem(node._id)}
               className="text-red-500 underline"
             >
               Delete
             </button>
           </div>
         </div>
-        {node.children?.length > 0 && renderTree(node.children, depth + 1)}
+        {node.children && node.children.length > 0 && renderTree(node.children, depth + 1)}
       </div>
     ));
   };
 
-  const tree = buildTree(files);
-
   return (user ?
-   (<div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Your Files & Folders</h1>
-      {renderTree(tree)}
-    </div>):<div></div>)
-  
+    (<div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">📂 Your Files & Folders</h1>
+      {files.length === 0 ? (
+        <p className="text-gray-500">No files uploaded yet.</p>
+      ) : (
+        renderTree(tree)
+      )}
+    </div>):<div></div>
+  );
 }
